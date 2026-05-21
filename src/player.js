@@ -12,8 +12,18 @@ class Player {
     this.playing = true;
 
     try {
-      this.browser = await chromium.launch({ headless: false });
-      const context = await this.browser.newContext({ viewport: null });
+      this.browser = await chromium.launch({
+        headless: false,
+        args: ['--disable-blink-features=AutomationControlled'],
+      });
+      const context = await this.browser.newContext({
+        viewport: null,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      });
+      // Hide webdriver flag so reCAPTCHA / bot-detection doesn't block the session
+      await context.addInitScript(() => {
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+      });
       this.page = await context.newPage();
 
       for (let i = 0; i < recording.actions.length; i++) {
@@ -143,7 +153,8 @@ class Player {
         }
 
         if (!clicked) throw new Error(`Could not click "${action.text || action.selector}"`);
-        await this.page.waitForLoadState('networkidle', { timeout: 3000 }).catch(() => {});
+        // Wait for any navigation / network activity triggered by the click (e.g. login redirects)
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
         break;
       }
 

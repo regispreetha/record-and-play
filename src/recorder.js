@@ -111,8 +111,18 @@ class Recorder {
       this.onAction = onAction;
       this.lastNavUrl = null;
 
-      this.browser = await chromium.launch({ headless: false });
-      this.context = await this.browser.newContext({ viewport: null });
+      this.browser = await chromium.launch({
+        headless: false,
+        args: ['--disable-blink-features=AutomationControlled'],
+      });
+      this.context = await this.browser.newContext({
+        viewport: null,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      });
+      // Hide webdriver flag so reCAPTCHA / bot-detection doesn't block the session
+      await this.context.addInitScript(() => {
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+      });
 
       await this.context.exposeFunction('__rnpRecord', (action) => {
         if (!this.recording) return;
