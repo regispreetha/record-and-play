@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Record &amp; Play</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+
+    <header>
+      <div class="header-left">
+        <span class="header-logo">&#9210;</span>
+        <span class="header-title">Record &amp; Play</span>
+        <span id="status-badge" class="badge badge-idle">Idle</span>
+      </div>
+      <button id="btn-new" class="btn btn-accent">+ New Recording</button>
+    </header>
+
+    <div class="layout">
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-header">Recordings</div>
+        <div id="recordings-list">
+          <p class="empty-msg">No recordings yet.</p>
+        </div>
+      </aside>
+
+      <!-- Main panel -->
+      <main id="main">
+
+        <!-- Welcome -->
+        <div id="panel-welcome" class="panel active">
+          <div class="welcome">
+            <div class="welcome-icon">&#9210;</div>
+            <h2>Record &amp; Play</h2>
+            <p>Capture browser interactions and replay them automatically.</p>
+            <ol class="how-to">
+              <li>Click <strong>+ New Recording</strong> and enter a URL.</li>
+              <li>A browser window opens — interact with the site normally.</li>
+              <li>Click <strong>Stop Recording</strong> to save.</li>
+              <li>Select a recording and click <strong>&#9654; Play</strong>.</li>
+            </ol>
+            <button id="btn-new-welcome" class="btn btn-accent">+ New Recording</button>
+          </div>
+        </div>
+
+        <!-- New recording form -->
+        <div id="panel-new" class="panel">
+          <h2>New Recording</h2>
+          <div class="form-group">
+            <label for="inp-name">Name</label>
+            <input id="inp-name" type="text" placeholder="My Recording" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="inp-url">Start URL</label>
+            <input id="inp-url" type="url" placeholder="https://example.com" autocomplete="off">
+          </div>
+          <div class="form-actions">
+            <button id="btn-cancel-new" class="btn btn-ghost">Cancel</button>
+            <button id="btn-start-rec" class="btn btn-record">&#9210; Start Recording</button>
+          </div>
+        </div>
+
+        <!-- Active recording -->
+        <div id="panel-recording" class="panel">
+          <div class="rec-header">
+            <div class="rec-indicator">
+              <span class="pulse"></span> Recording
+            </div>
+            <button id="btn-stop-rec" class="btn btn-stop">&#9632; Stop</button>
+          </div>
+          <div id="rec-url" class="meta-url"></div>
+          <div class="log-wrap">
+            <div class="log-header">Actions captured</div>
+            <div id="log-rec" class="log"></div>
+          </div>
+        </div>
+
+        <!-- Recording detail / play -->
+        <div id="panel-detail" class="panel">
+          <div class="detail-header">
+            <div>
+              <h2 id="detail-name"></h2>
+              <div id="detail-meta" class="detail-meta"></div>
+            </div>
+            <div class="detail-btns">
+              <label class="speed-label">
+                Speed
+                <select id="detail-speed" class="speed-select">
+                  <option value="0.5">0.5×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="2">2×</option>
+                  <option value="4">4×</option>
+                </select>
+              </label>
+              <button id="btn-play" class="btn btn-play">&#9654; Play</button>
+              <button id="btn-delete" class="btn btn-danger">Delete</button>
+            </div>
+          </div>
+          <div class="log-wrap">
+            <div class="log-header">Recorded actions</div>
+            <div id="log-detail" class="log"></div>
+          </div>
+        </div>
+
+        <!-- Active playback -->
+        <div id="panel-playback" class="panel">
+          <div class="rec-header">
+            <div>
+              <div id="pb-name" class="pb-name"></div>
+              <div id="pb-progress-label" class="pb-progress-label">Step 0 / 0</div>
+            </div>
+            <button id="btn-stop-play" class="btn btn-stop">&#9632; Stop</button>
+          </div>
+          <div class="progress-track">
+            <div id="pb-bar" class="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="log-wrap">
+            <div class="log-header">Playback log</div>
+            <div id="log-pb" class="log"></div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Saved recordings (personal data — each user keeps their own)
+recordings/
+
+# Playwright browser binaries (re-downloaded via npm run install-browsers)
+# These are stored outside the project by Playwright, but just in case:
+.playwright/
+
+# Environment
+.env
+.env.local
+
+# Claude Code (local IDE settings)
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
