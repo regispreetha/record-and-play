@@ -184,7 +184,14 @@ class Player {
         if (tagName === 'SELECT') {
           await loc.selectOption(action.value, { timeout: TIMEOUT });
         } else {
-          await loc.fill(action.value, { timeout: TIMEOUT });
+          // Click to focus, clear existing value, then type character-by-character
+          // with realistic delays — mimics human typing and satisfies bot-detection
+          // that monitors keystroke patterns (e.g. reCAPTCHA Enterprise, Cloudflare)
+          await loc.click({ timeout: TIMEOUT });
+          await loc.selectText({ timeout: 3000 }).catch(() => {});
+          await this.page.keyboard.press('Control+a');
+          await this.page.keyboard.press('Delete');
+          await loc.pressSequentially(action.value, { delay: 80 });
         }
         break;
       }
@@ -204,6 +211,12 @@ class Player {
         if (action.selector) {
           const loc = this.page.locator(action.selector).first();
           await loc.waitFor({ state: 'visible', timeout: TIMEOUT }).catch(() => {});
+          // Skip Tab on an empty input — likely an accidental keystroke recorded before
+          // the field was filled; replaying it moves focus away and can break form state
+          if (action.key === 'Tab') {
+            const currentVal = await loc.inputValue().catch(() => null);
+            if (currentVal === '' || currentVal === null) break;
+          }
           await loc.press(action.key, { timeout: TIMEOUT });
         } else {
           await this.page.keyboard.press(action.key);
