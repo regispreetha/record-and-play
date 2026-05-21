@@ -338,6 +338,10 @@ function handleWS(msg) {
       appendLog($('log-pb'), '<div class="log-line ok"><span class="log-text" style="color:#56d364">&#10003; Playback complete — click Save Session if you just logged in manually</span></div>');
       break;
 
+    case 'new_page_opened':
+      appendLog($('log-pb'), `<div class="log-line ok"><span class="log-text" style="color:#79c0ff">&#128196; New window detected — switched to: ${esc(msg.url)}</span></div>`);
+      break;
+
     case 'playback_stopped':
       setStatus('Idle', 'badge-idle');
       $('btn-pause-play').classList.remove('hidden');

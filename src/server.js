@@ -142,6 +142,8 @@ async function startServer(port) {
         onComplete: () => broadcast({ event: 'playback_complete' }),
         onError: ({ action, index, error }) =>
           broadcast({ event: 'playback_error', action, index, error }),
+        onNewPage: ({ url }) =>
+          broadcast({ event: 'new_page_opened', url }),
       });
     } catch (err) {
       res.status(500).json({ error: err.message });

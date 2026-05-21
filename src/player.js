@@ -41,6 +41,17 @@ class Player {
 
       this.page = await this.context.newPage();
 
+      // Auto-switch to new tabs/windows opened by the site (e.g. OAuth popups, underwriting tools)
+      this.context.on('page', async (newPage) => {
+        try {
+          await newPage.waitForLoadState('domcontentloaded', { timeout: 10000 });
+          this.page    = newPage;
+          this._mouseX = null;
+          this._mouseY = null;
+          if (options.onNewPage) options.onNewPage({ url: newPage.url() });
+        } catch {}
+      });
+
       for (let i = 0; i < recording.actions.length; i++) {
         if (!this.playing) break;
 
