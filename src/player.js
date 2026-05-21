@@ -1,4 +1,6 @@
-const { chromium } = require('playwright');
+const { chromium } = require('playwright-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+chromium.use(StealthPlugin());
 
 class Player {
   constructor() {
@@ -20,10 +22,7 @@ class Player {
         viewport: null,
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
       });
-      // Hide webdriver flag so reCAPTCHA / bot-detection doesn't block the session
-      await context.addInitScript(() => {
-        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-      });
+      // navigator.webdriver + 30 other bot signals patched by StealthPlugin above
       this.page = await context.newPage();
 
       for (let i = 0; i < recording.actions.length; i++) {

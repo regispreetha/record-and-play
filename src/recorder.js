@@ -1,4 +1,6 @@
-const { chromium } = require('playwright');
+const { chromium } = require('playwright-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+chromium.use(StealthPlugin());
 
 // Injected into every page to capture user interactions
 const CAPTURE_SCRIPT = `
@@ -119,10 +121,7 @@ class Recorder {
         viewport: null,
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
       });
-      // Hide webdriver flag so reCAPTCHA / bot-detection doesn't block the session
-      await this.context.addInitScript(() => {
-        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-      });
+      // navigator.webdriver + 30 other bot signals patched by StealthPlugin above
 
       await this.context.exposeFunction('__rnpRecord', (action) => {
         if (!this.recording) return;
