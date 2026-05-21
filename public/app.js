@@ -178,6 +178,29 @@ $('btn-stop-play').addEventListener('click', async () => {
   await fetch('/api/play/stop', { method: 'POST' });
 });
 
+$('btn-pause-play').addEventListener('click', async () => {
+  await fetch('/api/play/pause', { method: 'POST' });
+});
+
+$('btn-resume-play').addEventListener('click', async () => {
+  await fetch('/api/play/resume', { method: 'POST' });
+});
+
+$('btn-save-session').addEventListener('click', async () => {
+  const res  = await fetch('/api/play/save-session', { method: 'POST' });
+  const data = await res.json();
+  if (res.ok) {
+    $('btn-save-session').textContent = '✓ Session Saved';
+    $('btn-save-session').style.color = '#56d364';
+    setTimeout(() => {
+      $('btn-save-session').textContent = '💾 Save Session';
+      $('btn-save-session').style.color = '';
+    }, 3000);
+  } else {
+    alert(data.error);
+  }
+});
+
 /* ── Delete ──────────────────────────────────────────────────────────────── */
 $('btn-delete').addEventListener('click', async () => {
   if (!state.activeId) return;
@@ -286,15 +309,40 @@ function handleWS(msg) {
       break;
     }
 
+    case 'playback_paused':
+      setStatus('Paused', 'badge-rec');
+      $('pb-tip').classList.remove('hidden');
+      $('btn-pause-play').classList.add('hidden');
+      $('btn-resume-play').classList.remove('hidden');
+      appendLog($('log-pb'), '<div class="log-line"><span class="log-text" style="color:#e3b341">⏸ Paused — interact with the browser manually, then click Resume</span></div>');
+      break;
+
+    case 'playback_resumed':
+      setStatus('Playing', 'badge-play');
+      $('pb-tip').classList.add('hidden');
+      $('btn-pause-play').classList.remove('hidden');
+      $('btn-resume-play').classList.add('hidden');
+      appendLog($('log-pb'), '<div class="log-line ok"><span class="log-text" style="color:#56d364">▶ Resumed</span></div>');
+      break;
+
+    case 'session_saved':
+      appendLog($('log-pb'), `<div class="log-line ok"><span class="log-text" style="color:#56d364">💾 Session saved for ${esc(msg.url)} — future runs will skip login</span></div>`);
+      break;
+
     case 'playback_complete':
       setStatus('Idle', 'badge-idle');
       $('pb-bar').style.width = '100%';
       $('pb-progress-label').textContent = 'Complete';
-      appendLog($('log-pb'), '<div class="log-line ok"><span class="log-text" style="color:#56d364">&#10003; Playback complete</span></div>');
+      $('btn-pause-play').classList.add('hidden');
+      $('pb-tip').classList.add('hidden');
+      appendLog($('log-pb'), '<div class="log-line ok"><span class="log-text" style="color:#56d364">&#10003; Playback complete — click Save Session if you just logged in manually</span></div>');
       break;
 
     case 'playback_stopped':
       setStatus('Idle', 'badge-idle');
+      $('btn-pause-play').classList.remove('hidden');
+      $('btn-resume-play').classList.add('hidden');
+      $('pb-tip').classList.add('hidden');
       if (state.activeId) openDetail(state.activeId);
       else showPanel('welcome');
       break;

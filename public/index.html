@@ -113,7 +113,16 @@
               <div id="pb-name" class="pb-name"></div>
               <div id="pb-progress-label" class="pb-progress-label">Step 0 / 0</div>
             </div>
-            <button id="btn-stop-play" class="btn btn-stop">&#9632; Stop</button>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <button id="btn-pause-play"  class="btn btn-ghost">&#9646;&#9646; Pause</button>
+              <button id="btn-resume-play" class="btn btn-play hidden">&#9654; Resume</button>
+              <button id="btn-save-session" class="btn btn-ghost" title="Save login cookies so future runs skip the login automatically">&#128190; Save Session</button>
+              <button id="btn-stop-play"   class="btn btn-stop">&#9632; Stop</button>
+            </div>
+          </div>
+          <div id="pb-tip" class="pb-tip hidden">
+            &#128161; Automation paused. Interact with the browser manually, then click <strong>Resume</strong>.<br>
+            After logging in, click <strong>Save Session</strong> so future runs skip the login.
           </div>
           <div class="progress-track">
             <div id="pb-bar" class="progress-fill" style="width:0%"></div>

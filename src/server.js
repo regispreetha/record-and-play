@@ -95,11 +95,33 @@ async function startServer(port) {
 
   // ── Playback ───────────────────────────────────────────────────────────────
 
-  // NOTE: /stop must come before /:id so Express doesn't match "stop" as an id
+  // NOTE: named routes must come before /:id so Express doesn't match them as ids
   app.post('/api/play/stop', async (req, res) => {
     await player.stop();
     broadcast({ event: 'playback_stopped' });
     res.json({ success: true });
+  });
+
+  app.post('/api/play/pause', (req, res) => {
+    player.pause();
+    broadcast({ event: 'playback_paused' });
+    res.json({ success: true });
+  });
+
+  app.post('/api/play/resume', (req, res) => {
+    player.resume();
+    broadcast({ event: 'playback_resumed' });
+    res.json({ success: true });
+  });
+
+  app.post('/api/play/save-session', async (req, res) => {
+    try {
+      const url = await player.saveSession();
+      broadcast({ event: 'session_saved', url });
+      res.json({ success: true, url });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
   });
 
   app.post('/api/play/:id', async (req, res) => {
@@ -129,7 +151,7 @@ async function startServer(port) {
   // ── Status ─────────────────────────────────────────────────────────────────
 
   app.get('/api/status', (req, res) => {
-    res.json({ recording: recorder.isRecording(), playing: player.isPlaying() });
+    res.json({ recording: recorder.isRecording(), playing: player.isPlaying(), paused: player.isPaused() });
   });
 
   // ── Server ─────────────────────────────────────────────────────────────────
